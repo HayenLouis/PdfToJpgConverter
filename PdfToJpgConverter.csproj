@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>PdfToJpgConverter</AssemblyName>
     <RootNamespace>PdfToJpgConverter</RootNamespace>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
