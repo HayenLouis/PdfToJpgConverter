@@ -377,7 +377,7 @@ public partial class MainWindow : Window
                     for (int i = 0; i < pageCount; i++)
                     {
                         using var page = doc.Pages[i];
-                        string dest = Path.Combine(saveDir, $"{name}_page_{i + 1:D4}.jpg");
+                        string dest = Path.Combine(saveDir, $"{name}_{i + 1:D3}.jpg");
                         RenderPageToJpeg(page, dest, dpi, quality, rotate, colorMode);
                         done++;
                         ((IProgress<(int, int, string)>)progress)
