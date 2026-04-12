@@ -2,10 +2,8 @@
 #define MyAppVersion   "1.1"
 #define MyAppPublisher "HMZ"
 #define MyAppExeName   "PdfToJpgConverter.exe"
-#define MySourceDir    "publish"
-#define MyIconFile     "app.ico"
+#define MySourceDir    "..\PdfToJpgConverter_v1.1_portable"
 #define MySetupIcon    "app.ico"
-#define MyBmpFile      "Icon PDF2JPG.png"
 
 [Setup]
 AppName={#MyAppName}
@@ -33,23 +31,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-; Main executable
-Source: "{#MySourceDir}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-
-; Native PDFium libraries
-Source: "{#MySourceDir}\x64\pdfium.dll"; DestDir: "{app}\x64"; Flags: ignoreversion
-Source: "{#MySourceDir}\x86\pdfium.dll"; DestDir: "{app}\x86"; Flags: ignoreversion
-Source: "{#MySourceDir}\icudt.dll";       DestDir: "{app}";     Flags: ignoreversion
-
-; Patagames managed assemblies
-Source: "{#MySourceDir}\Patagames.Pdf.dll";        DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MySourceDir}\Patagames.Pdf.WinForms.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MySourceDir}\Patagames.Pdf.Wpf.dll";    DestDir: "{app}"; Flags: ignoreversion
-
-; All remaining runtime files (DLLs, json, etc.)
-Source: "{#MySourceDir}\*.dll";  DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "{#MySourceDir}\*.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MySourceDir}\*.pdb";  DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+; All files recursively (exe, all DLLs, json, x64/, x86/, locale folders, etc.)
+Source: "{#MySourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}";              Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"
