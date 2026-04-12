@@ -883,6 +883,37 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- ── About / Version ── -->
+                    <TextBlock Text="ABOUT"
+                               Foreground="{DynamicResource TextMuted}"
+                               FontSize="10" FontWeight="SemiBold"
+                               Margin="0,0,0,8"/>
+
+                    <Border Background="{DynamicResource CardBg}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="6"
+                            Padding="14,12" Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="PDF to JPG Converter"
+                                           Foreground="{DynamicResource TextPrimary}"
+                                           FontSize="13" FontWeight="Medium"/>
+                                <TextBlock Text="by HMZ"
+                                           Foreground="{DynamicResource TextSecondary}"
+                                           FontSize="11" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1"
+                                       Text="v1.1"
+                                       Foreground="{DynamicResource AccentBrush}"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
                 </StackPanel>
             </ScrollViewer>
 

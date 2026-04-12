@@ -1,11 +1,11 @@
 #define MyAppName      "PDF to JPG Converter"
-#define MyAppVersion   "1.0"
+#define MyAppVersion   "1.1"
 #define MyAppPublisher "HMZ"
 #define MyAppExeName   "PdfToJpgConverter.exe"
 #define MySourceDir    "publish"
 #define MyIconFile     "app.ico"
 #define MySetupIcon    "app.ico"
-#define MyBmpFile      "Logo-HLT-trans.png"
+#define MyBmpFile      "Icon PDF2JPG.png"
 
 [Setup]
 AppName={#MyAppName}
