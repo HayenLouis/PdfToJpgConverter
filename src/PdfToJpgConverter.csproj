@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>PdfToJpgConverter</AssemblyName>
+    <RootNamespace>PdfToJpgConverter</RootNamespace>
+    <ApplicationIcon>..\assets\app.ico</ApplicationIcon>
+    <Version>1.2.0</Version>
+    <FileVersion>1.2.0.0</FileVersion>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PDFium.Net.SDK" Version="4.6.*" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.*" />
+  </ItemGroup>
+
+  <!-- Copy PDFium native DLLs (package targets .NET Framework; content/ doesn't auto-copy for net8) -->
+  <ItemGroup>
+    <Content Include="$(NuGetPackageRoot)pdfium.net.sdk\4.6.2704\content\x64\pdfium.dll">
+      <Link>x64\pdfium.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(NuGetPackageRoot)pdfium.net.sdk\4.6.2704\content\x86\pdfium.dll">
+      <Link>x86\pdfium.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(NuGetPackageRoot)pdfium.net.sdk\4.6.2704\content\icudt.dll">
+      <Link>icudt.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

@@ -2,25 +2,75 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## IMPORTANT: Backup before every revision
+
+Before making any changes, always create a backup zip of the source files and place it in `backups/`:
+
+```bash
+powershell -Command "Compress-Archive -Path @('src','assets','installer/setup.iss','CLAUDE.md','README.md','.gitignore') -DestinationPath 'backups/PdfToJpgConverter_vX.X_pre-vY.Y.zip' -Force"
+```
+
+Name the zip `PdfToJpgConverter_vCURRENT_pre-vNEXT.zip` (e.g. `v1.2_pre-v1.3.zip`).
+
+## Repository structure
+
+```
+/assets/        — icon.png, app.ico, colourpallet.txt
+/backups/       — backup zips before each revision
+/installer/     — setup.iss (Inno Setup script) + compiled .exe
+/publish/       — dotnet publish output (gitignored)
+/src/           — all C# source files (.xaml, .cs, .csproj)
+CLAUDE.md
+README.md
+.gitignore
+```
+
 ## Build commands
 
 ```bash
-dotnet build                  # Debug build
-dotnet build -c Release       # Release build
-dotnet run                    # Run (Debug)
-dotnet run -c Release         # Run (Release)
+dotnet build src/                          # Debug build
+dotnet build src/ -c Release              # Release build
+dotnet run --project src/                 # Run (Debug)
+dotnet run --project src/ -c Release      # Run (Release)
 ```
 
-To scaffold a fresh WPF project use `dotnet new wpf --framework net8.0` — the framework flag does **not** accept `net8.0-windows`; the TFM is set to `net8.0-windows` automatically in the generated `.csproj`.
+## Publish (framework-dependent — requires .NET 8 Desktop Runtime on target)
 
-There are no tests in this project.
+```bash
+dotnet publish src/ -c Release --no-self-contained -o publish
+```
+
+## Build installer
+
+Requires Inno Setup 6 (installed at `%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe`).
+Run publish first, then:
+
+```bash
+"/c/Users/LouisHayen/AppData/Local/Programs/Inno Setup 6/ISCC.exe" installer/setup.iss
+```
+
+Output: `installer/PdfToJpgConverter_Setup_vX.X.exe`
 
 ## Architecture
 
-Single-window WPF app (.NET 8, `net8.0-windows`). All logic lives in two file pairs:
+Single-window WPF app (.NET 8, `net8.0-windows`). All logic lives in two file pairs inside `src/`:
 
 - **`App.xaml` / `App.xaml.cs`** — application entry point; owns the dynamic resource palette. `App.ApplyDarkTheme()` and `App.ApplyLightTheme()` overwrite `SolidColorBrush` entries in `Application.Current.Resources` at runtime — all UI elements bind to these via `{DynamicResource}`.
 - **`MainWindow.xaml` / `MainWindow.xaml.cs`** — the entire UI and conversion pipeline.
+
+### Settings persistence
+
+Settings are stored as JSON in `%AppData%\PdfToJpgConverter\settings.json`. The `AppSettings` class (in `MainWindow.xaml.cs`) holds all persisted values. `LoadSettings()` is called in the constructor (before `InitSettings()`); `SaveSettings()` is called from every event handler that changes a setting.
+
+Persisted settings:
+- `IsDark` — dark/light theme
+- `Dpi` — output DPI (36–1200)
+- `Quality` — JPEG quality (10–100)
+- `RotateLandscape` — auto-rotate landscape pages
+- `SubfolderPerPdf` — create subfolder per PDF
+- `ColorMode` — "Color" / "Grayscale" / "BlackAndWhite"
+- `OutputFolder` — default export folder path
+- `SaveNextToSource` — output location mode
 
 ### Conversion pipeline (`MainWindow.xaml.cs`)
 
@@ -28,6 +78,7 @@ Single-window WPF app (.NET 8, `net8.0-windows`). All logic lives in two file pa
 
 1. First pass over all files to count total pages (drives the progress bar maximum).
 2. Second pass: for each file, open `PdfDocument`, iterate pages, call `RenderPageToJpeg`, report progress via `IProgress<(int done, int total, string msg)>`.
+3. After completion, auto-opens the output folder in Explorer **only** when output mode is "Custom folder" (not "Next to PDF").
 
 `RenderPageToJpeg` (static):
 - `page.Width` / `page.Height` are in **points** (1/72 inch). Convert to pixels: `(int)Math.Round(points / 72.0 * dpi)`.
@@ -35,7 +86,7 @@ Single-window WPF app (.NET 8, `net8.0-windows`). All logic lives in two file pa
 - Fills a `PdfBitmap` with `FS_COLOR.White`, renders via `page.Render(...)`, casts `pdfBmp.Image` to `System.Drawing.Bitmap`, saves as JPEG at quality 95 via `ImageCodecInfo`.
 - Render flags used: `RenderFlags.FPDF_LCD_TEXT | RenderFlags.FPDF_PRINTING`.
 
-Output filename pattern: `<pdfname>_page_XXXX.jpg` written **flat** into the target directory (no subdirectory is created).
+Output filename pattern: `<pdfname>_NNN.jpg` written flat into the target directory.
 
 ### Output location
 
@@ -89,6 +140,8 @@ bmp.Save(path, codec, ep);
 ### Theme system
 
 All colors are `{DynamicResource}` references to keys defined in `App.xaml` (e.g. `AccentBrush`, `WindowBg`, `TextPrimary`, `TextSecondary`, `TextMuted`, `BorderBrush`, `ProgressBg`, etc.). `App.ApplyDarkTheme()` / `App.ApplyLightTheme()` replace the brush objects in-place; the UI updates automatically. Always use `{DynamicResource}` for any new styled element — never hardcode colors.
+
+The dark/light toggle is in the **Settings panel** (APPEARANCE section), not in the title bar.
 
 ### WPF compatibility notes
 
