@@ -56,20 +56,25 @@ var
 
 function IsDotNet8DesktopInstalled(): Boolean;
 var
-  RegKey: String;
-  Names: TArrayOfString;
-  I: Integer;
+  BasePath: String;
+  FindRec: TFindRec;
 begin
   Result := False;
-  RegKey := 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App';
-  if RegGetSubkeyNames(HKLM, RegKey, Names) then
+  // Check C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\8.*
+  BasePath := ExpandConstant('{pf}\dotnet\shared\Microsoft.WindowsDesktop.App\');
+  if FindFirst(BasePath + '8.*', FindRec) then
   begin
-    for I := 0 to GetArrayLength(Names) - 1 do
-      if Copy(Names[I], 1, 2) = '8.' then
-      begin
-        Result := True;
-        Exit;
-      end;
+    try
+      repeat
+        if FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY <> 0 then
+        begin
+          Result := True;
+          Exit;
+        end;
+      until not FindNext(FindRec);
+    finally
+      FindClose(FindRec);
+    end;
   end;
 end;
 
