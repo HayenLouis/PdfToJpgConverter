@@ -60,6 +60,7 @@ public partial class MainWindow : Window
     private bool      _subfolderPerPdf = false;
     private ColorMode _colorMode       = ColorMode.Color;
     private bool      _settingsOpen    = false;
+    private bool      _initialized     = false; // blocks SaveSettings during startup
 
     public MainWindow()
     {
@@ -72,6 +73,7 @@ public partial class MainWindow : Window
         OutputPathText.Text     = _outputFolder;
         ApplySegmentState();
         InitSettings();
+        _initialized = true;
     }
 
     // ── Settings persistence ───────────────────────────────────────────────
@@ -102,6 +104,7 @@ public partial class MainWindow : Window
 
     private void SaveSettings()
     {
+        if (!_initialized) return;
         try
         {
             Directory.CreateDirectory(SettingsDir);
